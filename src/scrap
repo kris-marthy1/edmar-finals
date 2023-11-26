@@ -1,0 +1,160 @@
+import React, { useState } from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
+import Form from 'react-bootstrap/Form';
+import Table from 'react-bootstrap/esm/Table';
+
+export default function PoS({ prodList, categList }) {
+    
+    const [name, setName] = useState('')
+    const [user, setUser] = useState({
+        name: '',
+        prodID: -1,
+        stock: -1
+    })
+    const [cart, setCart] = useState([])
+    function addToCart(id) {
+        const updatedUser = { ...user, prodID: id }; 
+        setCart([...cart, updatedUser]); 
+        setUser(updatedUser);
+    }
+    console.log(cart)
+    return (
+        <Container className="mt-3">
+            <Row className=''>
+                
+                    {
+                        user.name === '' 
+                        ? 
+                        (
+                        <Col md={4} >
+                        <Form>
+                            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                                <Form.Label>Email address</Form.Label>
+                                <Form.Control value={name} onChange={e=>setName(e.target.value)} />
+                            </Form.Group>
+                                <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                <button onClick={()=>{
+                                    setUser({...user, name: name})
+                                    }}>Save</button>
+                            </Form.Group>
+                        </Form>
+                        </Col>
+                        
+                        )
+                        : 
+                        (
+                        <Col md={5}>
+                            <div className='d-flex justify-content-between'>
+                                <h3>Welcome {user.name}!</h3>
+                                <button onClick={()=>{
+                                     setUser({...user, name: ''})
+                                }}>Log Out</button>
+                            </div>
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th>Your Cart</th>
+                                        <th>Item Name</th>
+                                        <th>Stock</th>
+                                        <th>Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cart.map(cart=>(
+                                      <tr>
+                                        <td></td>
+                                        {
+                                            prodList.map(prod=>{
+                                                if(cart.prodID === prod.prodID){
+                                                    return(
+                                                        <>
+                                                            <td>{prod.prodName}</td>
+                                                            <td>{cart.stock}</td>
+
+                                                           {
+                                                            categList.map((item, index)=>{
+                                                                if(prod.category === item[0]){
+                                                                    return (<td>{item[1]}</td>)
+                                                                }
+                                                                return;
+                                                            })
+                                                            }
+                                                        </>
+                                                    )
+                                                }
+                                                return;
+                                            })
+                                            }
+                                      </tr>  
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </Col>
+                        )
+                    }
+                <Col>
+                <Row xs={1} md={3} >
+                        {prodList.map((prod, index) => (
+                            <Col key={index} className="mb-2">
+                                <Card style={{ width: '17rem' }}>
+                                    <Card.Header>{prod.prodName}</Card.Header>
+                                    <Card.Body>
+                                        <Card.Text>
+                                            <p>Price: {prod.prodPrice}</p>
+                                            <p>Stock: {prod.prodStocks}</p>
+                                            {
+                                            categList.map((item, index)=>{
+                                                if(prod.category === item[index][0]){
+                                                    return (<p>Category: {item[1]}</p>)
+                                                }
+                                                return;
+                                            })
+                                            }
+                                        </Card.Text>
+                                    </Card.Body>
+                                        {user.name === '' 
+                                        ?
+                                        <></> 
+                                        :
+                                        <Card.Footer>
+                                            <input type='number' value={user.stock} onChange={e=>setUser({...user, stock: e.target.value})} />
+                                            <button onClick={()=>{
+                                                addToCart(prod.prodID)
+                                            }}>Order</button>
+                                        </Card.Footer>
+                                        }
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+
+                    {/* {
+                        prodList.map((prod, index)=>{
+                            if(index%3===0){
+                                return(
+                                    <Col md={4} className='p-1'>
+                                    <Card style={{ width: '15rem'}} >
+                                        <Card.Header>{prod.prodName}</Card.Header>
+                                        <Card.Body>
+                                            <Card.Text>
+                                            Some quick example text to build on the card title and make up the
+                                            bulk of the card's content.
+                                            </Card.Text>
+                                        </Card.Body>
+                                        <Card.Footer>
+                                            <button>Order</button>
+                                        </Card.Footer>
+                                    </Card>
+                                </Col>
+                                )
+                            }
+                        })
+                    } */}
+                </Col>
+            </Row>
+        </Container>
+    );
+}
